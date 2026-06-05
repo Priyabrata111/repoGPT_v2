@@ -63,3 +63,23 @@ cross-encoder/ms-marco-MiniLM-L-6-v2
 
 This significantly improves retrieval quality by jointly evaluating the query and candidate chunk.
 
+
+## Demo
+
+<img width="1911" height="617" alt="image" src="https://github.com/user-attachments/assets/6ad54b95-35cd-44e9-ae74-8d5b473dd886" />
+
+<img width="1792" height="857" alt="image" src="https://github.com/user-attachments/assets/cf840ff5-67d8-4d33-abac-c6f625cc24ae" />
+
+
+
+
+
+
+
+
+
+## Author
+
+Priyabrata Mondal
+
+GitHub: https://github.com/Priyabrata111
