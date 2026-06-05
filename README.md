@@ -46,3 +46,20 @@ Language-specific chunking strategies are used:
 | Others                  | Recursive fallback splitter |
 
 
+### Stage 3 — Hybrid Retrieval
+
+The system performs:
+
+1. Semantic Search using embeddings stored in ChromaDB
+2. BM25 Keyword Search for exact identifier matching
+
+### Stage 4 — Cross-Encoder Reranking
+
+Retrieved candidates are reranked using:
+
+```text
+cross-encoder/ms-marco-MiniLM-L-6-v2
+```
+
+This significantly improves retrieval quality by jointly evaluating the query and candidate chunk.
+
