@@ -6,12 +6,43 @@ The system combines semantic search, BM25 keyword retrieval, and cross-encoder r
 
 ## Features
 
-Query multiple repositories using natural language
-Supports C, C++, SystemC/TLM, Python, JavaScript, TypeScript, Markdown, and Jupyter notebooks
-Smart language-aware code chunking
-Semantic retrieval using Sentence Transformers and ChromaDB
-BM25 keyword search for exact identifier matching
-Hybrid retrieval using Reciprocal Rank Fusion (RRF)
-Cross-encoder reranking for improved retrieval accuracy
-Interactive Gradio web interface
-Repository-aware indexing and retrieval
+* Query multiple repositories using natural language
+* Supports C, C++, SystemC/TLM, Python, JavaScript, TypeScript, Markdown, and Jupyter notebooks
+* Smart language-aware code chunking
+* Semantic retrieval using Sentence Transformers and ChromaDB
+* BM25 keyword search for exact identifier matching
+* Hybrid retrieval using Reciprocal Rank Fusion (RRF)
+* Cross-encoder reranking for improved retrieval accuracy
+* Interactive Gradio web interface
+* Repository-aware indexing and retrieval
+
+## Tech Stack
+
+* LangChain
+* ChromaDB
+* Hugging Face Sentence Transformers
+* Rank-BM25
+* Cross Encoder (ms-marco-MiniLM-L-6-v2)
+* Google Gemini
+* Gradio
+* Python
+
+## Retrieval Pipeline
+
+### Stage 1 — Repository Ingestion
+
+The system clones one or more Git repositories and converts source files into LangChain Documents
+
+### Stage 2 — Smart Chunking
+
+Language-specific chunking strategies are used:
+
+| Language                | Strategy                    |
+| ----------------------- | --------------------------- |
+| Python                  | Python-aware splitter       |
+| JavaScript / TypeScript | JS-aware splitter           |
+| C / C++ / SystemC / TLM | C++-aware splitter          |
+| Markdown                | Header-aware splitter       |
+| Others                  | Recursive fallback splitter |
+
+
