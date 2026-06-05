@@ -1,10 +1,11 @@
-Multi-Repository Code Intelligence Assistant
+## Multi-Repository Code Intelligence Assistant
 
 An AI-powered code assistant that enables natural language querying across multiple software repositories. 
 The system combines semantic search, BM25 keyword retrieval, and cross-encoder reranking to locate relevant code and generate accurate answers grounded in source files.
 
 
-Features
+## Features
+
 Query multiple repositories using natural language
 Supports C, C++, SystemC/TLM, Python, JavaScript, TypeScript, Markdown, and Jupyter notebooks
 Smart language-aware code chunking
