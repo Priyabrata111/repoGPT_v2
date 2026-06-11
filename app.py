@@ -54,8 +54,10 @@ smart_chunks = data["chunks"]
 # Reranker
 # -------------------
 
+from sentence_transformers import CrossEncoder
+
 reranker = CrossEncoder(
-    "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    "./reranker_model"
 )
 
 # -------------------
@@ -65,7 +67,7 @@ reranker = CrossEncoder(
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     temperature=0,
-    google_api_key="AIzaSyA2WuGtrTsZYsF204TN0I65jB4YtVUJ3-k"#os.getenv("GOOGLE_API_KEY")
+    google_api_key= os.getenv("GOOGLE_API_KEY")
 )
 
 prompt = ChatPromptTemplate.from_template(
@@ -121,13 +123,27 @@ Code:
 
 def hybrid_search(query, k=12):
 
-    semantic = vectorstore.similarity_search(
+    semantic_docs = vectorstore.similarity_search(
         query,
         k=k
     )
 
-    return semantic
+    bm25_scores = bm25.get_scores(
+        tokenize(query)
+    )
 
+    top_idx = sorted(
+        range(len(bm25_scores)),
+        key=lambda i: bm25_scores[i],
+        reverse=True
+    )[:k]
+
+    keyword_docs = [
+        smart_chunks[i]
+        for i in top_idx
+    ]
+
+    return semantic_docs + keyword_docs
 
 # -------------------
 # Reranking
@@ -135,11 +151,11 @@ def hybrid_search(query, k=12):
 
 def search_with_rerank(query, k=4):
 
-    candidates = hybrid_search(query, k=12)
+    candidates = hybrid_search(query)
 
     pairs = [
-        (query, d.page_content)
-        for d in candidates
+        (query, doc.page_content)
+        for doc in candidates
     ]
 
     scores = reranker.predict(pairs)
@@ -150,7 +166,8 @@ def search_with_rerank(query, k=4):
         reverse=True
     )
 
-    return [d for d, _ in ranked[:k]]
+    return [doc for doc, _ in ranked[:k]]
+
 
 
 # -------------------
@@ -186,7 +203,19 @@ def ask(question):
             "question": question
         }
     )
+#--------------------
+# Debugging 
+#--------------------
 
+import torch
+import transformers
+import sentence_transformers
+import numpy as np
+
+print("torch:", torch.__version__)
+print("transformers:", transformers.__version__)
+print("sentence-transformers:", sentence_transformers.__version__)
+print("numpy:", np.__version__)
 # -------------------
 # Gradio
 # -------------------
