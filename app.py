@@ -51,7 +51,7 @@ with open("bm25_bundle.pkl", "rb") as f:
 bm25 = data["bm25"]
 smart_chunks = data["chunks"]
 # -------------------
-# Reranker
+# Load Reranker
 # -------------------
 
 from sentence_transformers import CrossEncoder
