@@ -32,7 +32,15 @@ vectorstore = Chroma(
     persist_directory="./chroma_db",
     embedding_function=embeddings
 )
+#-----------------------
+# verify db
+#-----------------------
+import os
 
+db_path = "./chroma_db"
+
+print(os.path.exists(db_path))
+print(os.listdir(db_path))
 # -------------------
 # BM25
 # -------------------
