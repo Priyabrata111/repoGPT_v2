@@ -37,9 +37,11 @@ vectorstore = Chroma(
 # BM25
 # -------------------
 
-with open("bm25.pkl", "rb") as f:
-    bm25 = pickle.load(f)
+with open("bm25_bundle.pkl", "rb") as f:
+    data = pickle.load(f)
 
+bm25 = data["bm25"]
+smart_chunks = data["chunks"]
 # -------------------
 # Reranker
 # -------------------
@@ -55,7 +57,7 @@ reranker = CrossEncoder(
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     temperature=0,
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+    google_api_key="AIzaSyA2WuGtrTsZYsF204TN0I65jB4YtVUJ3-k"#os.getenv("GOOGLE_API_KEY")
 )
 
 prompt = ChatPromptTemplate.from_template(
@@ -85,12 +87,25 @@ def tokenize(text):
     return [t.lower() for t in re.findall(r"\w+", text)]
 
 
+# def format_context(docs):
+#     return "\n\n---\n\n".join(
+#         f"# File: {d.metadata['source']}\n{d.page_content}"
+#         for d in docs
+#     )
+
 def format_context(docs):
-    return "\n\n---\n\n".join(
-        f"# File: {d.metadata['source']}\n{d.page_content}"
+
+    return "\n\n".join(
+        f"""
+Repository: {d.metadata.get('repo')}
+
+File: {d.metadata.get('source')}
+
+Code:
+{d.page_content}
+"""
         for d in docs
     )
-
 
 # -------------------
 # Hybrid Search
@@ -138,6 +153,23 @@ def ask(question):
 
     docs = search_with_rerank(question)
 
+    print("\n===== RETRIEVED DOCS =====")
+
+    for i, d in enumerate(docs, 1):
+        print(
+            f"{i}. "
+            f"{d.metadata.get('repo')} | "
+            f"{d.metadata.get('source')}"
+        )
+
+    print("==========================\n")
+
+    docs = search_with_rerank(question)
+
+    print("===== CONTEXT =====")
+    print(format_context(docs)[:5000])
+    print("===================")
+
     chain = prompt | llm | StrOutputParser()
 
     return chain.invoke(
@@ -146,7 +178,6 @@ def ask(question):
             "question": question
         }
     )
-
 
 # -------------------
 # Gradio
@@ -157,15 +188,14 @@ def gradio_respond(message, history):
 
 demo = gr.ChatInterface(
     fn=gradio_respond,
-    type="messages",
     title="Multi-Repository Code Intelligence Assistant",
     description="Query multiple repositories using semantic search, BM25 retrieval, and cross-encoder reranking.",
     examples=[
-        "How Initiator makes a connection to target in TLM 2.0?",
+        "How is the JWT token validated?",
         "How is b_transport implemented?",
-        "Where is bcrypt used?",
+        "Which file contains the implementation of nb_transport_fw()",
         "How are JWT tokens generated and validated in ecommerce app?",
-        "How does the simon game generate the next sequence?"
+        "Where is the game-over condition implemented in the Simon Game?"
     ]
 )
 
