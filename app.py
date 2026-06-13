@@ -219,6 +219,42 @@ print("torch:", torch.__version__)
 print("transformers:", transformers.__version__)
 print("sentence-transformers:", sentence_transformers.__version__)
 print("numpy:", np.__version__)
+
+
+query = "Where is the game-over condition implemented in the Simon Game?"
+
+scores = bm25.get_scores(tokenize(query))
+
+top_idx = sorted(
+    range(len(scores)),
+    key=lambda i: scores[i],
+    reverse=True
+)[:10]
+
+print("\n=== BM25 ===")
+
+for i in top_idx:
+    doc = smart_chunks[i]
+    print(doc.metadata["source"])
+
+
+pairs = [
+    (query, d.page_content)
+    for d in candidates
+]
+
+scores = reranker.predict(pairs)
+
+import numpy as np
+
+print("NaN count:", np.isnan(scores).sum())
+
+for doc, score in sorted(
+    zip(candidates, scores),
+    key=lambda x: x[1],
+    reverse=True
+)[:10]:
+    print(score, doc.metadata["source"])
 # -------------------
 # Gradio
 # -------------------
@@ -239,4 +275,4 @@ demo = gr.ChatInterface(
     ]
 )
 
-demo.launch()
+#demo.launch()
