@@ -210,175 +210,175 @@ def ask(question):
 # Debugging 
 #--------------------
 
-import torch
-import transformers
-import sentence_transformers
-import numpy as np
+# import torch
+# import transformers
+# import sentence_transformers
+# import numpy as np
 
-print("torch:", torch.__version__)
-print("transformers:", transformers.__version__)
-print("sentence-transformers:", sentence_transformers.__version__)
-print("numpy:", np.__version__)
-
-
-query = "Where is the game-over condition implemented in the Simon Game?"
-
-scores = bm25.get_scores(tokenize(query))
-
-top_idx = sorted(
-    range(len(scores)),
-    key=lambda i: scores[i],
-    reverse=True
-)[:10]
-
-print("\n=== BM25 ===")
-
-for i in top_idx:
-    doc = smart_chunks[i]
-    print(doc.metadata["source"])
-
-candidates = hybrid_search(query)
-
-print("\n=== AFTER FUSION ===")
-
-for i, d in enumerate(candidates[:20], 1):
-    print(i, d.metadata["source"])
-
-pairs = [
-    (query, d.page_content)
-    for d in candidates
-]
-
-scores = reranker.predict(pairs)
-
-ranked = sorted(
-    zip(candidates, scores),
-    key=lambda x: x[1],
-    reverse=True
-)
-
-print("\n=== AFTER RERANK ===")
-
-for doc, score in ranked[:10]:
-    print(
-        round(float(score), 4),
-        doc.metadata["source"]
-    )
-
-pairs = [
-    (query, d.page_content)
-    for d in candidates
-]
-
-pairs = [
-    (query, d.page_content)
-    for d in candidates
-]
-
-scores = reranker.predict(pairs)
-
-import numpy as np
-
-print("NaN count:", np.isnan(scores).sum())
-
-for doc, score in sorted(
-    zip(candidates, scores),
-    key=lambda x: x[1],
-    reverse=True
-)[:20]:
-    print(score, doc.metadata["source"])
-
-scores = reranker.predict(pairs)
-
-import numpy as np
-
-print("NaN count:", np.isnan(scores).sum())
-
-for doc, score in sorted(
-    zip(candidates, scores),
-    key=lambda x: x[1],
-    reverse=True
-)[:10]:
-    print(score, doc.metadata["source"])
+# print("torch:", torch.__version__)
+# print("transformers:", transformers.__version__)
+# print("sentence-transformers:", sentence_transformers.__version__)
+# print("numpy:", np.__version__)
 
 
+# query = "Where is the game-over condition implemented in the Simon Game?"
 
-from sentence_transformers import CrossEncoder
-import numpy as np
+# scores = bm25.get_scores(tokenize(query))
 
-reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+# top_idx = sorted(
+#     range(len(scores)),
+#     key=lambda i: scores[i],
+#     reverse=True
+# )[:10]
 
-pairs = [
-    (
-        "Where is the game-over condition implemented in the Simon Game?",
-        "The game over condition is implemented in game.js"
-    ),
-    (
-        "Where is the game-over condition implemented in the Simon Game?",
-        "CSS styles for buttons"
-    )
-]
+# print("\n=== BM25 ===")
 
-scores = reranker.predict(pairs)
+# for i in top_idx:
+#     doc = smart_chunks[i]
+#     print(doc.metadata["source"])
 
-print(scores)
-print("NaNs:", np.isnan(scores).sum())
+# candidates = hybrid_search(query)
+
+# print("\n=== AFTER FUSION ===")
+
+# for i, d in enumerate(candidates[:20], 1):
+#     print(i, d.metadata["source"])
+
+# pairs = [
+#     (query, d.page_content)
+#     for d in candidates
+# ]
+
+# scores = reranker.predict(pairs)
+
+# ranked = sorted(
+#     zip(candidates, scores),
+#     key=lambda x: x[1],
+#     reverse=True
+# )
+
+# print("\n=== AFTER RERANK ===")
+
+# for doc, score in ranked[:10]:
+#     print(
+#         round(float(score), 4),
+#         doc.metadata["source"]
+#     )
+
+# pairs = [
+#     (query, d.page_content)
+#     for d in candidates
+# ]
+
+# pairs = [
+#     (query, d.page_content)
+#     for d in candidates
+# ]
+
+# scores = reranker.predict(pairs)
+
+# import numpy as np
+
+# print("NaN count:", np.isnan(scores).sum())
+
+# for doc, score in sorted(
+#     zip(candidates, scores),
+#     key=lambda x: x[1],
+#     reverse=True
+# )[:20]:
+#     print(score, doc.metadata["source"])
+
+# scores = reranker.predict(pairs)
+
+# import numpy as np
+
+# print("NaN count:", np.isnan(scores).sum())
+
+# for doc, score in sorted(
+#     zip(candidates, scores),
+#     key=lambda x: x[1],
+#     reverse=True
+# )[:10]:
+#     print(score, doc.metadata["source"])
 
 
 
+# from sentence_transformers import CrossEncoder
+# import numpy as np
 
-from sentence_transformers import CrossEncoder
-import torch
+# reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 
-reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+# pairs = [
+#     (
+#         "Where is the game-over condition implemented in the Simon Game?",
+#         "The game over condition is implemented in game.js"
+#     ),
+#     (
+#         "Where is the game-over condition implemented in the Simon Game?",
+#         "CSS styles for buttons"
+#     )
+# ]
 
-print("dtype:", next(reranker.model.parameters()).dtype)
-print("device:", next(reranker.model.parameters()).device)
-import torch
+# scores = reranker.predict(pairs)
 
-print("Torch:", torch.__version__)
-print("Default dtype:", torch.get_default_dtype())
-from sentence_transformers import CrossEncoder
-
-reranker = CrossEncoder(
-    "cross-encoder/ms-marco-MiniLM-L-6-v2",
-    model_kwargs={"torch_dtype": "float32"}
-)
-
-score = reranker.predict([
-    (
-        "Where is the game-over condition implemented in the Simon Game?",
-        "The game over condition is implemented in game.js"
-    )
-])
-
-print(score)
+# print(scores)
+# print("NaNs:", np.isnan(scores).sum())
 
 
 
-import numpy as np
 
-for i, pair in enumerate(pairs):
+# from sentence_transformers import CrossEncoder
+# import torch
 
-    try:
-        score = reranker.predict([pair])[0]
+# reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 
-        if np.isnan(score):
-            print("\n===== NAN PAIR =====")
-            print("INDEX:", i)
-            print("SOURCE:", candidates[i].metadata["source"])
+# print("dtype:", next(reranker.model.parameters()).dtype)
+# print("device:", next(reranker.model.parameters()).device)
+# import torch
 
-            print("\nQUERY:")
-            print(repr(pair[0][:200]))
+# print("Torch:", torch.__version__)
+# print("Default dtype:", torch.get_default_dtype())
+# from sentence_transformers import CrossEncoder
 
-            print("\nDOCUMENT:")
-            print(repr(pair[1][:1000]))
+# reranker = CrossEncoder(
+#     "cross-encoder/ms-marco-MiniLM-L-6-v2",
+#     model_kwargs={"torch_dtype": "float32"}
+# )
 
-    except Exception as e:
-        print("\n===== ERROR PAIR =====")
-        print("INDEX:", i)
-        print("SOURCE:", candidates[i].metadata["source"])
-        print(e)
+# score = reranker.predict([
+#     (
+#         "Where is the game-over condition implemented in the Simon Game?",
+#         "The game over condition is implemented in game.js"
+#     )
+# ])
+
+# print(score)
+
+
+
+# import numpy as np
+
+# for i, pair in enumerate(pairs):
+
+#     try:
+#         score = reranker.predict([pair])[0]
+
+#         if np.isnan(score):
+#             print("\n===== NAN PAIR =====")
+#             print("INDEX:", i)
+#             print("SOURCE:", candidates[i].metadata["source"])
+
+#             print("\nQUERY:")
+#             print(repr(pair[0][:200]))
+
+#             print("\nDOCUMENT:")
+#             print(repr(pair[1][:1000]))
+
+#     except Exception as e:
+#         print("\n===== ERROR PAIR =====")
+#         print("INDEX:", i)
+#         print("SOURCE:", candidates[i].metadata["source"])
+#         print(e)
 # -------------------
 # Gradio
 # -------------------
