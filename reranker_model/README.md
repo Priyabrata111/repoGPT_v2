@@ -118,7 +118,7 @@ You can finetune this model on your own dataset.
 ### Framework Versions
 - Python: 3.12.13
 - Sentence Transformers: 5.5.1
-- Transformers: 5.10.1
+- Transformers: 5.10.2
 - PyTorch: 2.11.0+cpu
 - Accelerate: 1.13.0
 - Datasets: 4.0.0
