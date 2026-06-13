@@ -237,6 +237,38 @@ for i in top_idx:
     doc = smart_chunks[i]
     print(doc.metadata["source"])
 
+candidates = hybrid_search(query)
+
+print("\n=== AFTER FUSION ===")
+
+for i, d in enumerate(candidates[:20], 1):
+    print(i, d.metadata["source"])
+
+pairs = [
+    (query, d.page_content)
+    for d in candidates
+]
+
+scores = reranker.predict(pairs)
+
+ranked = sorted(
+    zip(candidates, scores),
+    key=lambda x: x[1],
+    reverse=True
+)
+
+print("\n=== AFTER RERANK ===")
+
+for doc, score in ranked[:10]:
+    print(
+        round(float(score), 4),
+        doc.metadata["source"]
+    )
+
+pairs = [
+    (query, d.page_content)
+    for d in candidates
+]
 
 pairs = [
     (query, d.page_content)
@@ -253,8 +285,100 @@ for doc, score in sorted(
     zip(candidates, scores),
     key=lambda x: x[1],
     reverse=True
+)[:20]:
+    print(score, doc.metadata["source"])
+
+scores = reranker.predict(pairs)
+
+import numpy as np
+
+print("NaN count:", np.isnan(scores).sum())
+
+for doc, score in sorted(
+    zip(candidates, scores),
+    key=lambda x: x[1],
+    reverse=True
 )[:10]:
     print(score, doc.metadata["source"])
+
+
+
+from sentence_transformers import CrossEncoder
+import numpy as np
+
+reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+pairs = [
+    (
+        "Where is the game-over condition implemented in the Simon Game?",
+        "The game over condition is implemented in game.js"
+    ),
+    (
+        "Where is the game-over condition implemented in the Simon Game?",
+        "CSS styles for buttons"
+    )
+]
+
+scores = reranker.predict(pairs)
+
+print(scores)
+print("NaNs:", np.isnan(scores).sum())
+
+
+
+
+from sentence_transformers import CrossEncoder
+import torch
+
+reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+print("dtype:", next(reranker.model.parameters()).dtype)
+print("device:", next(reranker.model.parameters()).device)
+import torch
+
+print("Torch:", torch.__version__)
+print("Default dtype:", torch.get_default_dtype())
+from sentence_transformers import CrossEncoder
+
+reranker = CrossEncoder(
+    "cross-encoder/ms-marco-MiniLM-L-6-v2",
+    model_kwargs={"torch_dtype": "float32"}
+)
+
+score = reranker.predict([
+    (
+        "Where is the game-over condition implemented in the Simon Game?",
+        "The game over condition is implemented in game.js"
+    )
+])
+
+print(score)
+
+
+
+import numpy as np
+
+for i, pair in enumerate(pairs):
+
+    try:
+        score = reranker.predict([pair])[0]
+
+        if np.isnan(score):
+            print("\n===== NAN PAIR =====")
+            print("INDEX:", i)
+            print("SOURCE:", candidates[i].metadata["source"])
+
+            print("\nQUERY:")
+            print(repr(pair[0][:200]))
+
+            print("\nDOCUMENT:")
+            print(repr(pair[1][:1000]))
+
+    except Exception as e:
+        print("\n===== ERROR PAIR =====")
+        print("INDEX:", i)
+        print("SOURCE:", candidates[i].metadata["source"])
+        print(e)
 # -------------------
 # Gradio
 # -------------------
